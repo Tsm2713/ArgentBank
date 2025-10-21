@@ -7,7 +7,6 @@ import iconSecurity from '../img/icon-security.png';
 function Home() {
   return (
     <main className="main">
-      {/* Section hero */}
       <div className="hero">
         <section className="hero-content">
           <h2 className="sr-only">Promoted Content</h2>
@@ -18,7 +17,6 @@ function Home() {
         </section>
       </div>
 
-      {/* Section features */}
       <section className="features">
         <h2 className="sr-only">Features</h2>
         <Feature 

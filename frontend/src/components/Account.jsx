@@ -1,6 +1,4 @@
-import React from 'react';
-
-function Account({ title, amount, description }) {
+export default function Account({ title, amount, description }) {
   return (
     <section className="account">
       <div className="account-content-wrapper">
@@ -14,5 +12,3 @@ function Account({ title, amount, description }) {
     </section>
   );
 }
-
-export default Account;
