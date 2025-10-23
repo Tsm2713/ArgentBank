@@ -23,16 +23,16 @@ body {
 
 .sr-only {
   border: 0 !important;
-  clip: rect(1px, 1px, 1px, 1px) !important; /* 1 */
+  clip: rect(1px, 1px, 1px, 1px) !important;
   -webkit-clip-path: inset(50%) !important;
-  clip-path: inset(50%) !important; /* 2 */
+  clip-path: inset(50%) !important;
   height: 1px !important;
   margin: -1px !important;
   overflow: hidden !important;
   padding: 0 !important;
   position: absolute !important;
   width: 1px !important;
-  white-space: nowrap !important; /* 3 */
+  white-space: nowrap !important;
 }
 
 .main-nav {
@@ -48,7 +48,7 @@ body {
 }
 
 .main-nav a.router-link-exact-active {
-  color: #42b983;
+  color: black;
 }
 
 .main-nav-item {
@@ -168,12 +168,18 @@ body {
 .sign-in-content {
   box-sizing: border-box;
   background-color: white;
-  width: 300px;
-  margin: 0 auto;
-  margin-top: 3rem;
+  width: 25%;
+  margin: 2.3rem auto;
   padding: 2rem;
 }
 
+.main.bg-dark {
+  padding-top: 2rem;
+  padding-bottom: 3rem;   
+}
+.profil-size {
+  height : 31rem;
+}
 .sign-in-icon {
   font-size: 5rem;
 }
@@ -195,6 +201,7 @@ body {
 
 .input-wrapper label {
   font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .input-wrapper input {
@@ -276,6 +283,14 @@ body {
   color: #fff;
 }
 
+.cancel-button {
+  border-color: white;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+
 @media (min-width: 720px) {
   .account {
     flex-direction: row;
@@ -289,3 +304,108 @@ body {
     width: 200px;
   }
 }
+
+:root {
+  --brand: black;
+
+}
+
+.container {
+  width: min(1100px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.main-nav {
+  padding: 12px 20px;            
+  border-bottom: 1px solid #e9ecef;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+.main-nav-logo-image { width: 180px; } 
+.main-nav a { color: var(--ink); }
+.main-nav .right { display: flex; gap: 12px; align-items: center; } 
+
+.main-nav-item.button {
+  text-decoration: none;
+  padding: .5rem .9rem;
+  border: 1px solid var(--brand);
+  border-radius: 8px;
+}
+.main-nav-item.button:hover {
+  background: var(--brand);
+  color: #fff;
+  text-decoration: none;
+}
+
+
+.hero-content {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.feature-item img,
+.feature-item svg {
+  max-width: 120px;
+  height: auto;
+  display: block;
+  margin-inline: auto;
+}
+
+.sign-in-content {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+.input-wrapper input {
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+}
+.input-wrapper input:focus {
+  outline: 3px solid rgba(0,188,119,.25);
+  border-color: var(--brand);
+}
+
+.sign-in-button,
+.edit-button,
+.transaction-button {
+  border-radius: 10px;
+  transition: transform .05s ease, opacity .2s;
+}
+.sign-in-button:hover,
+.edit-button:hover,
+.transaction-button:hover {
+  opacity: .95;
+}
+.sign-in-button:active,
+.edit-button:active,
+.transaction-button:active {
+  transform: translateY(1px);
+}
+
+.account {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+}
+
+.profile-card {
+  width: 30%;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+
+@media (max-width: 640px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+.cancel-button { border-radius: 10px; }

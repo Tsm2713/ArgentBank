@@ -33,7 +33,7 @@ export default function SignIn() {
   const canSubmit = email.trim() !== '' && password.trim() !== '' && !loading;
 
   return (
-    <main className="main bg-dark">
+    <main className="main bg-dark profil-size">
       <section className="sign-in-content">
         <i className="fa fa-user-circle sign-in-icon" aria-hidden="true"></i>
         <h1>Sign In</h1>
