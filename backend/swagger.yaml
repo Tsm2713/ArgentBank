@@ -33,6 +33,7 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
+
   /user/signup:
     post:
       tags:
@@ -57,6 +58,7 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
+
   /user/profile:
     get:
       security:
@@ -65,8 +67,6 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-       # - application/json
       responses:
         '200':
           description: User profile retrieved successully
@@ -94,18 +94,162 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
+
+  /user/{accountId}/transactions:
+    get:
+      tags:
+        - Transaction Module
+      summary: Obtenir toutes les transactions d’un compte
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Liste des transactions
+
+  /user/transactions/{transactionId}:
+    get:
+      tags:
+        - Transaction Module
+      summary: Détails d’une transaction
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Détails de la transaction
+
+  /user/transactions/{transactionId}/note:
+    post:
+      tags:
+        - Transaction Module
+      summary: Ajouter une note
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Note ajoutée
+    put:
+      tags:
+        - Transaction Module
+      summary: Modifier une note
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Note modifiée
+    delete:
+      tags:
+        - Transaction Module
+      summary: Supprimer une note
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Note supprimée
+
+  /user/transactions/{transactionId}/type:
+    post:
+      tags:
+        - Transaction Module
+      summary: Ajouter un type
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Type ajouté
+    put:
+      tags:
+        - Transaction Module
+      summary: Modifier un type
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Type modifié
+    delete:
+      tags:
+        - Transaction Module
+      summary: Supprimer un type
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Type supprimé
+
+  /user/transactions/{transactionId}/category:
+    post:
+      tags:
+        - Transaction Module
+      summary: Ajouter une catégorie
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Catégorie ajoutée
+    put:
+      tags:
+        - Transaction Module
+      summary: Modifier une catégorie
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Catégorie modifiée
+    delete:
+      tags:
+        - Transaction Module
+      summary: Supprimer une catégorie
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Catégorie supprimée
+
 securityDefinitions:
   Bearer:
     type: apiKey
     name: Authorization
     in: header
+
 definitions:
   User:
     properties:
