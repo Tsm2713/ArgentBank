@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-const BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || 'http://localhost:3001/api/v1';
+const BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$|^\/+/, '') || 'http://localhost:3001/api/v1';
 
 export const loginUser = createAsyncThunk('auth/login', async ({ email, password }) => {
   const res = await fetch(`${BASE_URL}/user/login`, {
@@ -56,15 +56,11 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    signOut: (state) => {
-      return initialState;
-    },
+    signOut: () => initialState,
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(loginUser.pending, (state) => { state.loading = true; })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.token = action.payload;
@@ -73,27 +69,19 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-
+      .addCase(fetchProfile.pending, (state) => { state.loading = true; })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.user = action.payload;
         state.loading = false;
-      })
-      .addCase(fetchProfile.pending, (state) => {
-        state.loading = true;
+        state.user = action.payload;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
-
-      .addCase(updateUserName.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(updateUserName.pending, (state) => { state.loading = true; })
       .addCase(updateUserName.fulfilled, (state, action) => {
         state.loading = false;
-        if (state.user) {
-          state.user.userName = action.payload.userName;
-        }
+        if (state.user) state.user.userName = action.payload.userName;
       })
       .addCase(updateUserName.rejected, (state, action) => {
         state.loading = false;

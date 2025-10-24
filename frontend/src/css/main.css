@@ -409,3 +409,40 @@ body {
 }
 
 .cancel-button { border-radius: 10px; }
+
+.mainbg-darktransaction {
+  background-color: #12002b;
+  padding-top: 2rem;
+  padding-bottom: 14rem;
+}
+
+.h2-transac {
+  color: white;
+}
+
+.transactions-table th,
+.transactions-table td { color: #e7e7f3; }
+
+.transactions-table button {
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+}
+.transactions-table button:hover {
+  background: rgba(255,255,255,.12);
+}
+
+.transactions-table td button[aria-label="Modifier la transaction"] {
+  margin-left: 8px;
+}
+
+select, input[type="text"] {
+  background: #1f1a2b;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 8px;
+  padding: 6px 8px;
+}

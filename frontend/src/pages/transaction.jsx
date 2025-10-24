@@ -1,64 +1,106 @@
-import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { request } from '../api/client';
 
-export default function Transactions() {
-  const { accountId } = useParams(); 
+const BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || 'http://localhost:3001/api/v1';
+
+const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Revenus', 'Logement', 'Autre'];
+
+export default function Transaction() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const accountId = params.get('accountId');
+
   const token = useSelector((state) => state.auth.token);
-  const [transactions, setTransactions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [editingId, setEditingId] = useState(null);
-  const [editType, setEditType] = useState('');
-  const [editCategory, setEditCategory] = useState('');
-  const [editNote, setEditNote] = useState('');
 
-  const typeOptions = ['DÉBIT', 'CRÉDIT'];
-  const categoryOptions = ['Alimentation', 'Loisirs', 'Factures', 'Salaire', 'Autre'];
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [editingId, setEditingId] = useState(null);
+  const [noteDraft, setNoteDraft] = useState('');
+  const [categoryDraft, setCategoryDraft] = useState('');
+
+  const headersAuth = useMemo(
+    () => ({ Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }),
+    [token]
+  );
 
   useEffect(() => {
-  
-    async function fetchTransactions() {
+    if (!accountId || !token) return;
+
+    const fetchTransactions = async () => {
       try {
-        const data = await request(`accounts/${accountId}/transactions`, { token });
-        setTransactions(data.transactions || []);
-      } catch (error) {
-        console.error('Erreur chargement transactions:', error);
+        setLoading(true);
+        const res = await fetch(`${BASE_URL}/user/${accountId}/transactions`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          const raw = await res.text();
+          console.error('Erreur backend:', res.status, raw);
+          throw new Error('Erreur de récupération');
+        }
+        const data = await res.json();
+        setTransactions(data.body || []);
+      } catch (e) {
+        console.error('fetchTransactions error:', e);
+        setTransactions([]);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
-    }
+    };
+
     fetchTransactions();
   }, [accountId, token]);
 
-  const handleEdit = (tx) => {
-    setEditingId(tx.id);
-    setEditType(tx.type || '');
-    setEditCategory(tx.category || '');
-    setEditNote(tx.note || '');
+  const startEdit = (txn) => {
+    setEditingId(txn.id);
+    setNoteDraft(txn.note || '');
+    setCategoryDraft(txn.category || '');
   };
 
-  const handleSave = async (txId) => {
+  const cancelEdit = () => {
+    setEditingId(null);
+    setNoteDraft('');
+    setCategoryDraft('');
+  };
+
+  const saveNote = async (txnId) => {
+    const method = (transactions.find(t => t.id === txnId)?.note ?? '') ? 'PUT' : 'POST';
+    const res = await fetch(`${BASE_URL}/user/transactions/${txnId}/note`, {
+      method,
+      headers: headersAuth,
+      body: JSON.stringify({ note: noteDraft }),
+    });
+    if (!res.ok) throw new Error('Erreur sauvegarde note');
+    const { body: updated } = await res.json();
+    setTransactions((prev) => prev.map(t => t.id === txnId ? updated : t));
+  };
+
+  const saveCategory = async (txnId) => {
+    const current = transactions.find(t => t.id === txnId)?.category ?? '';
+    const method = current ? 'PUT' : 'POST';
+    const res = await fetch(`${BASE_URL}/user/transactions/${txnId}/category`, {
+      method,
+      headers: headersAuth,
+      body: JSON.stringify({ category: categoryDraft }),
+    });
+    if (!res.ok) throw new Error('Erreur sauvegarde catégorie');
+    const { body: updated } = await res.json();
+    setTransactions((prev) => prev.map(t => t.id === txnId ? updated : t));
+  };
+
+  const saveAll = async (txnId) => {
     try {
-      await request(`transactions/${txId}`, {
-        method: 'PUT',
-        token,
-        body: { type: editType, category: editCategory, note: editNote },
-      });
-      setTransactions((prev) =>
-        prev.map((tx) =>
-          tx.id === txId
-            ? { ...tx, type: editType, category: editCategory, note: editNote }
-            : tx
-        )
-      );
-      setEditingId(null);
-    } catch (error) {
-      console.error('Erreur sauvegarde:', error);
+      await saveNote(txnId);
+      await saveCategory(txnId);
+      cancelEdit();
+    } catch (e) {
+      console.error(e);
+      alert("Impossible d'enregistrer les modifications.");
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <main className="main bg-dark">
         <p>Chargement des transactions...</p>
@@ -69,16 +111,18 @@ export default function Transactions() {
   return (
     <main className="main bg-dark">
       <h1 className="sr-only">Transactions du compte</h1>
+
       <section>
-        <h2>Détails du compte</h2>
+        <h2 className="h2-transac">Détails du compte</h2>
         <div className="account">
           <h3>Argent Bank Checking (x{accountId})</h3>
           <p>Solde disponible</p>
         </div>
       </section>
+
       <section>
         <h2>Transactions</h2>
-        <table className="transactions-table">
+        <table className="transactions-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th>Date</th>
@@ -87,60 +131,86 @@ export default function Transactions() {
               <th>Catégorie</th>
               <th>Note</th>
               <th>Montant</th>
-              <th></th>
+              <th style={{ width: 120 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {transactions.map((tx) => (
-              <tr key={tx.id}>
-                <td>{tx.date}</td>
-                <td>{tx.description}</td>
-                <td>
-                  {editingId === tx.id ? (
-                    <select value={editType} onChange={(e) => setEditType(e.target.value)}>
-                      {typeOptions.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    tx.type
-                  )}
-                </td>
-                <td>
-                  {editingId === tx.id ? (
-                    <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}>
-                      {categoryOptions.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    tx.category
-                  )}
-                </td>
-                <td>
-                  {editingId === tx.id ? (
-                    <input
-                      type="text"
-                      value={editNote}
-                      onChange={(e) => setEditNote(e.target.value)}
-                    />
-                  ) : (
-                    tx.note
-                  )}
-                </td>
-                <td>{tx.amount} €</td>
-                <td>
-                  {editingId === tx.id ? (
-                    <>
-                      <button onClick={() => handleSave(tx.id)}>Enregistrer</button>
-                      <button onClick={() => setEditingId(null)}>Annuler</button>
-                    </>
-                  ) : (
-                    <button onClick={() => handleEdit(tx)}>✏️ Modifier</button>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {transactions.length === 0 ? (
+              <tr><td colSpan="7">Aucune transaction trouvée.</td></tr>
+            ) : (
+              transactions.map((txn) => {
+                const isEditing = editingId === txn.id;
+                return (
+                  <tr key={txn.id}>
+                    <td>{new Date(txn.date).toLocaleDateString()}</td>
+                    <td>{txn.description}</td>
+                    <td>{txn.type}</td>
+                    <td>
+                      {isEditing ? (
+                        <select
+                          value={categoryDraft}
+                          onChange={(e) => setCategoryDraft(e.target.value)}
+                        >
+                          <option value="">—</option>
+                          {CATEGORIES.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <>
+                          {txn.category || '—'}{' '}
+                          <button
+                            onClick={() => startEdit(txn)}
+                            title="Modifier"
+                            aria-label="Modifier la transaction"
+                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            ✎
+                          </button>
+                        </>
+                      )}
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={noteDraft}
+                          onChange={(e) => setNoteDraft(e.target.value)}
+                          placeholder="Ajouter une note"
+                          style={{ width: '100%' }}
+                        />
+                      ) : (
+                        <>
+                          {txn.note || '—'}{' '}
+                          <button
+                            onClick={() => startEdit(txn)}
+                            title="Modifier"
+                            aria-label="Modifier la transaction"
+                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            ✎
+                          </button>
+                        </>
+                      )}
+                    </td>
+
+                    <td style={{ textAlign: 'right' }}>
+                      {txn.amount.toFixed(2)} €
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <>
+                          <button onClick={() => saveAll(txn.id)}>Enregistrer</button>{' '}
+                          <button onClick={cancelEdit}>Annuler</button>
+                        </>
+                      ) : (
+                        <button onClick={() => startEdit(txn)}>Modifier</button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </section>

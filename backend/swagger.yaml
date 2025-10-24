@@ -8,11 +8,15 @@ host: localhost:3001
 basePath: /api/v1
 schemes:
   - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
 paths:
   /user/login:
     post:
-      tags:
-        - User Module
+      tags: [User Module]
       summary: Login
       description: API for Login
       parameters:
@@ -22,8 +26,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Login'
-      produces:
-        - application/json
       responses:
         '200':
           description: Login Successfully
@@ -36,8 +38,7 @@ paths:
 
   /user/signup:
     post:
-      tags:
-        - User Module
+      tags: [User Module]
       summary: Signup
       description: API for Signup
       parameters:
@@ -47,8 +48,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/User'
-      produces:
-        - application/json
       responses:
         '200':
           description: Signup Successfully
@@ -63,13 +62,12 @@ paths:
     get:
       security:
         - Bearer: []
-      tags:
-        - User Module
+      tags: [User Module]
       summary: User Profile API
       description: API for fetching a user profile
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile retrieved successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -79,8 +77,7 @@ paths:
     put:
       security:
         - Bearer: []
-      tags:
-        - User Module
+      tags: [User Module]
       summary: User Profile API
       description: API for updating a user profile
       parameters:
@@ -90,8 +87,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/UserProfile'
-      produces:
-        - application/json
       responses:
         '200':
           description: User profile updated successfully
@@ -102,10 +97,12 @@ paths:
         '500':
           description: Internal Server Error
 
+  # ===== Transactions =====
   /user/{accountId}/transactions:
     get:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Obtenir toutes les transactions d’un compte
       parameters:
         - name: accountId
@@ -115,11 +112,18 @@ paths:
       responses:
         '200':
           description: Liste des transactions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+        '401':
+          description: Unauthorized
 
   /user/transactions/{transactionId}:
     get:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Détails d’une transaction
       parameters:
         - name: transactionId
@@ -129,35 +133,58 @@ paths:
       responses:
         '200':
           description: Détails de la transaction
+          schema:
+            $ref: '#/definitions/Transaction'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
 
   /user/transactions/{transactionId}/note:
     post:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Ajouter une note
       parameters:
         - name: transactionId
           in: path
           required: true
           type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotePayload'
       responses:
         '200':
           description: Note ajoutée
+          schema:
+            $ref: '#/definitions/Transaction'
     put:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Modifier une note
       parameters:
         - name: transactionId
           in: path
           required: true
           type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotePayload'
       responses:
         '200':
           description: Note modifiée
+          schema:
+            $ref: '#/definitions/Transaction'
     delete:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Supprimer une note
       parameters:
         - name: transactionId
@@ -167,36 +194,51 @@ paths:
       responses:
         '200':
           description: Note supprimée
+          schema:
+            $ref: '#/definitions/Transaction'
 
   /user/transactions/{transactionId}/type:
     post:
-      tags:
-        - Transaction Module
-      summary: Ajouter un type
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
+      summary: Ajouter un type (documenté, UI non utilisée)
       parameters:
         - name: transactionId
           in: path
           required: true
           type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/TypePayload'
       responses:
         '200':
           description: Type ajouté
     put:
-      tags:
-        - Transaction Module
-      summary: Modifier un type
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
+      summary: Modifier un type (documenté, UI non utilisée)
       parameters:
         - name: transactionId
           in: path
           required: true
           type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/TypePayload'
       responses:
         '200':
           description: Type modifié
     delete:
-      tags:
-        - Transaction Module
-      summary: Supprimer un type
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
+      summary: Supprimer un type (documenté, UI non utilisée)
       parameters:
         - name: transactionId
           in: path
@@ -208,32 +250,49 @@ paths:
 
   /user/transactions/{transactionId}/category:
     post:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Ajouter une catégorie
       parameters:
         - name: transactionId
           in: path
           required: true
           type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CategoryPayload'
       responses:
         '200':
           description: Catégorie ajoutée
+          schema:
+            $ref: '#/definitions/Transaction'
     put:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Modifier une catégorie
       parameters:
         - name: transactionId
           in: path
           required: true
           type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CategoryPayload'
       responses:
         '200':
           description: Catégorie modifiée
+          schema:
+            $ref: '#/definitions/Transaction'
     delete:
-      tags:
-        - Transaction Module
+      security:
+        - Bearer: []
+      tags: [Transaction Module]
       summary: Supprimer une catégorie
       parameters:
         - name: transactionId
@@ -243,6 +302,8 @@ paths:
       responses:
         '200':
           description: Catégorie supprimée
+          schema:
+            $ref: '#/definitions/Transaction'
 
 securityDefinitions:
   Bearer:
@@ -268,6 +329,7 @@ definitions:
       userName:
         type: string
         description: user public name
+
   Login:
     properties:
       email:
@@ -276,6 +338,7 @@ definitions:
       password:
         type: string
         description: user password
+
   ApiResponse:
     type: object
     properties:
@@ -290,13 +353,58 @@ definitions:
             type: string
           email:
             type: string
+
   LoginResponse:
     type: object
     properties:
       token:
         type: string
+
   UserProfile:
     type: object
     properties:
       userName:
         type: string
+
+  Transaction:
+    type: object
+    properties:
+      id: { type: integer }
+      accountId: { type: integer }
+      date: { type: string }
+      description: { type: string }
+      type: { type: string }
+      amount: { type: number, format: float }
+      category: { type: string }
+      note: { type: string }
+
+  # 👉 Exemples pour pré-remplir le Try it out
+  NotePayload:
+    type: object
+    required: [note]
+    properties:
+      note:
+        type: string
+        example: "Déjeuner avec client"
+    example:
+      note: "Déjeuner avec client"
+
+  CategoryPayload:
+    type: object
+    required: [category]
+    properties:
+      category:
+        type: string
+        example: "Food"
+    example:
+      category: "Food"
+
+  TypePayload:
+    type: object
+    required: [type]
+    properties:
+      type:
+        type: string
+        example: "credit"
+    example:
+      type: "credit"
