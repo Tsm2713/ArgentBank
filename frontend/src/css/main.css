@@ -418,22 +418,21 @@ body {
 
 .h2-transac {
   color: white;
+  margin-bottom: 2rem;
 }
 
 .transactions-table th,
-.transactions-table td { color: #e7e7f3; }
+.transactions-table td { color: white; }
 
 .transactions-table button {
   font: inherit;
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,.15);
-  background: rgba(255,255,255,.06);
   cursor: pointer;
+  margin-bottom: 5px;
 }
-.transactions-table button:hover {
-  background: rgba(255,255,255,.12);
-}
+
 
 .transactions-table td button[aria-label="Modifier la transaction"] {
   margin-left: 8px;
@@ -445,4 +444,8 @@ select, input[type="text"] {
   border: 1px solid rgba(255,255,255,.2);
   border-radius: 8px;
   padding: 6px 8px;
+}
+
+.main.bg-dark.transac {
+  padding-bottom: 14.5rem;
 }

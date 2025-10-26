@@ -2,9 +2,18 @@ import { useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-const BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || 'http://localhost:3001/api/v1';
+const BASE_URL =
+  import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || 'http://localhost:3001/api/v1';
 
 const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Revenus', 'Logement', 'Autre'];
+
+const BALANCES_BY_ACCOUNT = {
+  '8349': 2082.79,
+  '6712': 10928.42,
+};
+
+const formatUSD = (n) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 
 export default function Transaction() {
   const location = useLocation();
@@ -24,6 +33,13 @@ export default function Transaction() {
     () => ({ Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }),
     [token]
   );
+
+  const navBalance = location.state?.balance;
+  const accountBalance = useMemo(() => {
+    if (typeof navBalance === 'number') return navBalance;
+    if (!accountId) return null;
+    return BALANCES_BY_ACCOUNT[accountId] ?? null;
+  }, [navBalance, accountId]);
 
   useEffect(() => {
     if (!accountId || !token) return;
@@ -65,7 +81,8 @@ export default function Transaction() {
   };
 
   const saveNote = async (txnId) => {
-    const method = (transactions.find(t => t.id === txnId)?.note ?? '') ? 'PUT' : 'POST';
+    const current = transactions.find((t) => t.id === txnId)?.note || '';
+    const method = current ? 'PUT' : 'POST';
     const res = await fetch(`${BASE_URL}/user/transactions/${txnId}/note`, {
       method,
       headers: headersAuth,
@@ -73,11 +90,11 @@ export default function Transaction() {
     });
     if (!res.ok) throw new Error('Erreur sauvegarde note');
     const { body: updated } = await res.json();
-    setTransactions((prev) => prev.map(t => t.id === txnId ? updated : t));
+    setTransactions((prev) => prev.map((t) => (t.id === txnId ? updated : t)));
   };
 
   const saveCategory = async (txnId) => {
-    const current = transactions.find(t => t.id === txnId)?.category ?? '';
+    const current = transactions.find((t) => t.id === txnId)?.category || '';
     const method = current ? 'PUT' : 'POST';
     const res = await fetch(`${BASE_URL}/user/transactions/${txnId}/category`, {
       method,
@@ -86,7 +103,7 @@ export default function Transaction() {
     });
     if (!res.ok) throw new Error('Erreur sauvegarde catégorie');
     const { body: updated } = await res.json();
-    setTransactions((prev) => prev.map(t => t.id === txnId ? updated : t));
+    setTransactions((prev) => prev.map((t) => (t.id === txnId ? updated : t)));
   };
 
   const saveAll = async (txnId) => {
@@ -109,19 +126,18 @@ export default function Transaction() {
   }
 
   return (
-    <main className="main bg-dark">
+    <main className="main bg-dark transac">
       <h1 className="sr-only">Transactions du compte</h1>
 
       <section>
-        <h2 className="h2-transac">Détails du compte</h2>
         <div className="account">
           <h3>Argent Bank Checking (x{accountId})</h3>
-          <p>Solde disponible</p>
+          <p>{accountBalance != null ? formatUSD(accountBalance) : 'Solde disponible'}</p>
         </div>
+        <h2 className="h2-transac">Détails du compte</h2>
       </section>
 
       <section>
-        <h2>Transactions</h2>
         <table className="transactions-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -130,13 +146,15 @@ export default function Transaction() {
               <th>Type</th>
               <th>Catégorie</th>
               <th>Note</th>
-              <th>Montant</th>
+              <th style={{ textAlign: 'right' }}>Montant</th>
               <th style={{ width: 120 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {transactions.length === 0 ? (
-              <tr><td colSpan="7">Aucune transaction trouvée.</td></tr>
+              <tr>
+                <td colSpan="7">Aucune transaction trouvée.</td>
+              </tr>
             ) : (
               transactions.map((txn) => {
                 const isEditing = editingId === txn.id;
@@ -153,7 +171,9 @@ export default function Transaction() {
                         >
                           <option value="">—</option>
                           {CATEGORIES.map((c) => (
-                            <option key={c} value={c}>{c}</option>
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
                           ))}
                         </select>
                       ) : (
@@ -193,10 +213,7 @@ export default function Transaction() {
                         </>
                       )}
                     </td>
-
-                    <td style={{ textAlign: 'right' }}>
-                      {txn.amount.toFixed(2)} €
-                    </td>
+                    <td style={{ textAlign: 'right' }}>{txn.amount.toFixed(2)} €</td>
                     <td>
                       {isEditing ? (
                         <>

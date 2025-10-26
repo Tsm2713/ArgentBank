@@ -6,7 +6,6 @@ export default function Account({ title, amount, description }) {
   const handleViewTransactions = () => {
     const match = title.match(/\(x(\d+)\)/);
     const accountId = match ? match[1] : null;
-
     if (accountId) {
       navigate(`/transaction?accountId=${accountId}`);
     } else {
@@ -26,7 +25,7 @@ export default function Account({ title, amount, description }) {
           className="transaction-button"
           onClick={handleViewTransactions}
         >
-          View transactions
+          Voir les transactions
         </button>
       </div>
     </section>
