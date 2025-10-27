@@ -71,7 +71,7 @@ body {
 }
 
 .hero {
-  background-image: url('../img/bank-tree.jpeg');
+  background-image: url('../img/bank-tree-1200.webp');
   background-position: 0 -50px;
   background-size: cover;
   background-repeat: no-repeat;
@@ -360,10 +360,6 @@ body {
 .input-wrapper input {
   border: 1px solid #cfd8dc;
   border-radius: 8px;
-}
-.input-wrapper input:focus {
-  outline: 3px solid rgba(0,188,119,.25);
-  border-color: var(--brand);
 }
 
 .sign-in-button,

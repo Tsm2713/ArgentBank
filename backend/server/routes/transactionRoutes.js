@@ -56,11 +56,17 @@ router.delete(
   transactionController.deleteCategory
 );
 
-// TYPE (documenté, UI non utilisée)
+// TYPE (non utilisée)
 router.post(
   '/user/transactions/:transactionId/type',
   tokenValidation.validateToken,
   transactionController.addType
+);
+
+router.put(
+  '/user/transactions/:transactionId/type',
+  tokenValidation.validateToken,
+  transactionController.updateType
 );
 
 router.delete(

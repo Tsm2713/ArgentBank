@@ -153,6 +153,16 @@ function addType(req, res) {
   return ok(res, txn);
 }
 
+// PUT 
+function updateType(req, res) {
+  const { transactionId } = req.params;
+  const { type } = req.body || {};
+  const txn = findTransactionById(transactionId);
+  if (!txn) return notFound(res, "Transaction not found");
+  txn.type = type ?? txn.type;
+  return ok(res, txn);
+}
+
 // DELETE
 function deleteType(req, res) {
   const { transactionId } = req.params;

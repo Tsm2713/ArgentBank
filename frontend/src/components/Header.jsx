@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { signOut } from '../features/authSlice';
-import logo from '../img/argentBankLogo.png';
+import logo from '../img/argentbank-logo.webp';
 
 export default function Header() {
   const { user, token } = useSelector((s) => s.auth);
@@ -24,7 +24,15 @@ export default function Header() {
   return (
     <nav className="main-nav">
       <Link className="main-nav-logo" to="/" aria-label="Go to home">
-        <img className="main-nav-logo-image" src={logo} alt="Argent Bank Logo" />
+        <img
+          className="main-nav-logo-image"
+          src={logo}
+          alt="Argent Bank Logo"
+          width={100}
+          height={55}
+          decoding="async"
+          fetchPriority="high"
+        />
         <h1 className="sr-only">Argent Bank</h1>
       </Link>
 
