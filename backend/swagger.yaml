@@ -97,7 +97,7 @@ paths:
         '500':
           description: Internal Server Error
 
-  # ===== Transactions =====
+  # Transactions
   /user/{accountId}/transactions:
     get:
       security:
@@ -202,7 +202,7 @@ paths:
       security:
         - Bearer: []
       tags: [Transaction Module]
-      summary: Ajouter un type (non utilisée)
+      summary: Ajouter un type
       parameters:
         - name: transactionId
           in: path
@@ -220,7 +220,7 @@ paths:
       security:
         - Bearer: []
       tags: [Transaction Module]
-      summary: Modifier un type (non utilisée)
+      summary: Modifier un type
       parameters:
         - name: transactionId
           in: path
@@ -238,7 +238,7 @@ paths:
       security:
         - Bearer: []
       tags: [Transaction Module]
-      summary: Supprimer un type (non utilisée)
+      summary: Supprimer un type
       parameters:
         - name: transactionId
           in: path
@@ -378,7 +378,6 @@ definitions:
       category: { type: string }
       note: { type: string }
 
-  # 👉 Exemples pour pré-remplir le Try it out
   NotePayload:
     type: object
     required: [note]

@@ -4,7 +4,6 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
-import Transaction from './pages/Transaction';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -19,14 +18,6 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/transaction"
-          element={
-            <ProtectedRoute>
-              <Transaction />
             </ProtectedRoute>
           }
         />

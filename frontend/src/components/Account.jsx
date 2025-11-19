@@ -3,15 +3,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Account({ title, amount, description }) {
   const navigate = useNavigate();
 
-  const handleViewTransactions = () => {
-    const match = title.match(/\(x(\d+)\)/);
-    const accountId = match ? match[1] : null;
-    if (accountId) {
-      navigate(`/transaction?accountId=${accountId}`);
-    } else {
-      navigate('/transaction');
-    }
-  };
+
 
   return (
     <section className="account">
@@ -21,10 +13,7 @@ export default function Account({ title, amount, description }) {
         <p className="account-amount-description">{description}</p>
       </div>
       <div className="account-content-wrapper cta">
-        <button
-          className="transaction-button"
-          onClick={handleViewTransactions}
-        >
+        <button className="transaction-button">
           Voir les transactions
         </button>
       </div>
